@@ -46,6 +46,8 @@ You might want to use DeepSpeed. See config examples under `./continued_pretrain
 
 ### Evaluation
 
+Code under the directory of `./evaluation`.
+
 ## Citation
 
 ```
