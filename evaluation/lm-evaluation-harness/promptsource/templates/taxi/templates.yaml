@@ -1,0 +1,15 @@
+dataset: wikiann
+templates:
+  taxi: !Template
+    answer_choices: Recommendation ||| Faith ||| Description ||| Sin ||| Grace ||| Violence
+    id: taxi
+    jinja: "The topic of the verse \"{{verse}}\" is |||  {{label}}"
+    metadata: !TemplateMetadata
+      choices_in_prompt: false
+      languages:
+      - multi
+      metrics:
+      - Accuracy
+      original_task: false
+    name: taxi
+    reference: 'MEGA'
