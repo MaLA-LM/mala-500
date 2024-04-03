@@ -38,7 +38,10 @@ model = PeftModel.from_pretrained(base_model, 'MaLA-LM/mala-500')
 
 ### Vocabulary Extension
 
+Code under the directory of `./tokenization`. 
+
 ### Continued Pretraining
+
 Code under the directory of `./continued_pretraining`. 
 
 Customize the `run.sh` script for your own clusters or workstation. The script is provided for SLURM-based systems.
