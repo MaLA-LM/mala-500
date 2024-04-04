@@ -1,6 +1,6 @@
 # MaLA-500: Massive Language Adaptation of Large Language Models
 
-[![Model](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-blue)](https://huggingface.co/MaLA-LM/mala-500)
+[![Model](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-blue)](https://huggingface.co/collections/MaLA-LM/mala-500-660e57f8e53e3cc2ccd31cb9)
 [![Data](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Data-green)](https://huggingface.co/datasets/cis-lmu/Glot500)
 [![arXiv](https://img.shields.io/badge/arXiv-2305.12182-b31b1b.svg)](https://arxiv.org/abs/2401.13303)
 
@@ -30,8 +30,8 @@ from peft import PeftModel
 
 base_model = AutoModelForCausalLM.from_pretrained('meta-llama/Llama-2-7b-hf')
 base_model.resize_token_embeddings(260164)
-tokenizer = AutoTokenizer.from_pretrained('MaLA-LM/mala-500')
-model = PeftModel.from_pretrained(base_model, 'MaLA-LM/mala-500')
+tokenizer = AutoTokenizer.from_pretrained('MaLA-LM/mala-500-10b-v2')
+model = PeftModel.from_pretrained(base_model, 'MaLA-LM/mala-500-10b-v2')
 ```
 
 ## Codebase
