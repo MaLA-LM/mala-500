@@ -210,126 +210,20 @@ class HuggingFaceAutoLM(TokenLM):
         torch_dtype: Optional[Union[str, torch.dtype]] = None,
     ) -> transformers.AutoModel:
         """Returns a pre-trained pytorch model from a pre-trained model configuration."""
-        if "_pfeiffer_" in pretrained:
-            base_model = 'bigscience/' + pretrained.split('/')[-2].split('_')[0]
+        if "mala" in pretrained:
+            base_model = 'meta-llama/Llama-2-7b-hf'
             model = self.AUTO_MODEL_CLASS.from_pretrained(
                 base_model,
                 revision=revision + ("/" + subfolder if subfolder is not None else ""),
-                # device_map=device_map,
-                # max_memory=max_memory,
-                # offload_folder=offload_folder,
                 torch_dtype=torch_dtype,
             )
             model.config.update({'use_cache': True})
-            # pretrained_adapter_name = model.load_adapter(f"{pretrained}/clm_pfeiffer_None")
-            # model.set_active_adapters(pretrained_adapter_name)
-            # fix for size mismatch 
-            state_dict = get_fp32_state_dict_from_zero_checkpoint(pretrained)
-            adapter_name = "clm_pfeiffer_None"
-            adapter_config = PfeifferInvConfig().load(f"{pretrained}/{adapter_name}/adapter_config.json")
-            model.add_adapter(adapter_name, config=adapter_config)
-            model.load_state_dict(state_dict)
-            model.set_active_adapters(adapter_name)
-        elif "_pfeiffer+inv_" in pretrained:
-            base_model = 'bigscience/' + pretrained.split('/')[-2].split('_')[0]
-            model = self.AUTO_MODEL_CLASS.from_pretrained(
-                base_model,
-                revision=revision + ("/" + subfolder if subfolder is not None else ""),
-                # device_map=device_map,
-                # max_memory=max_memory,
-                # offload_folder=offload_folder,
-                torch_dtype=torch_dtype,
-            )
-            model.config.update({'use_cache': True})
-            # pretrained_adapter_name = model.load_adapter(f"{pretrained}/clm_pfeiffer+inv_None")
-            # fix for size mismatch 
-            state_dict = get_fp32_state_dict_from_zero_checkpoint(pretrained)
-            adapter_name = "clm_pfeiffer+inv_None"
-            adapter_config = PfeifferInvConfig().load(f"{pretrained}/{adapter_name}/adapter_config.json")
-            model.add_adapter(adapter_name, config=adapter_config)
-            model.load_state_dict(state_dict)
-            model.set_active_adapters(adapter_name)
-        elif "_aa_" in pretrained:
-            base_model = 'bigscience/' + pretrained.split('/')[-2].split('_')[0]
-            model = self.AUTO_MODEL_CLASS.from_pretrained(
-                base_model,
-                revision=revision + ("/" + subfolder if subfolder is not None else ""),
-                # device_map=device_map,
-                # max_memory=max_memory,
-                # offload_folder=offload_folder,
-                torch_dtype=torch_dtype,
-            )
-            model.config.update({'use_cache': True})
-            pretrained_adapter_name = model.load_adapter(f"{pretrained}/clm_aa")
-            model.set_active_adapters(pretrained_adapter_name)
-        elif "lora" in pretrained:
-            if '13b' in pretrained:
-                base_model = '/mounts/data/proj/ayyoobbig/LLM500/llama2_hf/llama2-13b-hf'
-            else:
-                base_model = '/mounts/data/proj/ayyoobbig/LLM500/llama2_hf/llama2-7b-hf'
-            # base_model = 'bigscience/' + pretrained.split('/')[-2].split('_')[0]
-            model = self.AUTO_MODEL_CLASS.from_pretrained(
-                base_model,
-                revision=revision + ("/" + subfolder if subfolder is not None else ""),
-                # device_map=device_map,
-                # max_memory=max_memory,
-                # offload_folder=offload_folder,
-                torch_dtype=torch_dtype,
-            )
-            model.config.update({'use_cache': True})
-            # if 'extend' in pretrained:
             model.resize_token_embeddings(260164)
-            # load PeftModel
             model = PeftModel.from_pretrained(model, pretrained)
-            '''
-            if 'bloom-560m' in pretrained:
-                # bloom-560m is trained without DS -> safe to load directly
-                pretrained_adapter_name = model.load_adapter(f"{pretrained}/clm_lora_None")
-                model.set_active_adapters(pretrained_adapter_name)
-            else: 
-                # fix for size mismatch 
-                state_dict = get_fp32_state_dict_from_zero_checkpoint(pretrained)
-                adapter_name = "clm_lora_None"
-                adapter_config = LoRAConfig().load(f"{pretrained}/{adapter_name}/adapter_config.json")
-                model.add_adapter(adapter_name, config=adapter_config)
-                model.load_state_dict(state_dict)
-                model.set_active_adapters(adapter_name)
-            # pretrained_adapter_name = model.load_adapter(f"{pretrained}/clm_lora_{language}")
-            # model.set_active_adapters(pretrained_adapter_name)
-            '''
-        elif "_ia3_" in pretrained:
-            base_model = 'bigscience/' + pretrained.split('/')[-2].split('_')[0]
-            model = self.AUTO_MODEL_CLASS.from_pretrained(
-                base_model,
-                revision=revision + ("/" + subfolder if subfolder is not None else ""),
-                # device_map=device_map,
-                # max_memory=max_memory,
-                # offload_folder=offload_folder,
-                torch_dtype=torch_dtype,
-            )
-            model.config.update({'use_cache': True})
-            pretrained_adapter_name = model.load_adapter(f"{pretrained}/clm_ia3_{language}")
-            model.set_active_adapters(pretrained_adapter_name)
-        elif "_prefix_tuning_" in pretrained or "_prompt_tuning_" in pretrained:
-            base_model = 'bigscience/' + pretrained.split('/')[-2].split('_')[0]
-            model = self.AUTO_MODEL_CLASS.from_pretrained(
-                base_model,
-                revision=revision + ("/" + subfolder if subfolder is not None else ""),
-                # device_map=device_map,
-                # max_memory=max_memory,
-                # offload_folder=offload_folder,
-                torch_dtype=torch_dtype,
-            )
-            model.config.update({'use_cache': True})
-            pretrained_adapter_name = model.load_adapter(f"{pretrained}/clm_prefix_tuning_{language}")
-            model.set_active_adapters(pretrained_adapter_name)
         else:
             model = self.AUTO_MODEL_CLASS.from_pretrained(
                 pretrained,
                 revision=revision + ("/" + subfolder if subfolder is not None else ""),
-                # device_map=device_map,
-                # max_memory=max_memory,
-                # offload_folder=offload_folder,
                 torch_dtype=torch_dtype,
             )
             model.config.update({'use_cache': True})
